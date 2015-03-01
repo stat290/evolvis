@@ -1,0 +1,15 @@
+Package: evolvis
+Type: Package
+Title: evolution visualization
+Version: 0.1
+Date: 2015-03-01
+Author: Stan Johnson and Kyle Johnston
+Authors@R: c(person("Kyle", "Johnston", email = "kjohnsto@stanford.edu", role = c("aut", "cre")),
+            person("Stanley", "Johnson", email = "sjj@stanford.edu", role = c("aut", "cre")))
+Maintainer: <sjj@stanford.edu>
+Description: evolution visualization; generalized tools for visualizing change in composition over time or other axes.
+Depends: R (>= 3.1.0)
+License: GPL-2
+LazyData: TRUE
+Imports:
+  ggvis (>= 0.4)
