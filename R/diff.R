@@ -9,7 +9,39 @@ textDiff <- function(texts) {
   for (i in 2:length(diffs)) {
     currentDiff <- .mergeTextDiff(currentDiff, diffs[[i]])
   }
-  currentDiff
+  .packTextDiff(currentDiff)
+}
+
+.packTextDiff <- function(diffs) {
+  n <- length(diffs[[1]])
+  calculateIndexCodes <- function(i, diffs) {
+    flags <- unlist(lapply(diffs, 
+                           FUN=function(x, i) ifelse(is.na(x[i]), 0, 1), i))
+    paste(flags, collapse="")
+  }
+  findIndexValue <- function(i, diffs) {
+    unique(na.omit(sapply(diffs, FUN=function(x,i) x[i], i)))
+  }
+  indexCodes<- sapply(1:n, FUN=calculateIndexCodes, diffs)
+  codeStarts <- which(indexCodes[1:(n-1)] != indexCodes[2:n]) + 1
+  codeEnds <- codeStarts - 1
+  codeStarts <- c(1, codeStarts)
+  codeEnds <- c(codeEnds, n)
+  indexValues <- sapply(1:n, FUN=findIndexValue, diffs)
+  totalString <- paste(indexValues, collapse="")
+  substr2 <- function(x, starts, ends, string) {
+    substr(string, starts[x], ends[x])
+  }
+  stringSegments <- sapply(1:length(codeStarts), FUN=substr2,
+                           codeStarts, codeEnds, totalString)
+  segmentIndexCodes <- indexCodes[codeStarts]
+  indexValues <- lapply(segmentIndexCodes, stringToCharVector)
+  indexValues <- lapply(indexValues, FUN=`==`, "1")
+  names(indexValues) <- segmentIndexCodes
+  indexValues <- do.call(data.frame, args=c(indexValues, stringsAsFactors=FALSE))
+  names(indexValues) <- 1:length(indexValues)
+  attr(indexValues, "text") <- stringSegments
+  indexValues
 }
 
 .mergeTextDiff <- function(x, y) {

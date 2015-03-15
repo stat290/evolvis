@@ -7,10 +7,10 @@ exampleLCS <- computeLcs(x, y)
 d1 <- .singleTextDiff(x, y)
 d2 <- .singleTextDiff(y, z)
 .mergeTextDiff(d1,d2)
-textDiff(c(x,y,z))
+diffObj <- textDiff(c(x,y,z))
 
+texts <- attr(diffObj, "text")
+paste(texts[unlist(diffObj[1,])], collapse="") == x
+paste(texts[unlist(diffObj[2,])], collapse="") == y
+paste(texts[unlist(diffObj[3,])], collapse="") == z
 
-d <- .singleTextDiff(x, y)
-df <- as.data.frame(d, stringsAsFactors=FALSE)
-str(df)
-df[1:45,]
