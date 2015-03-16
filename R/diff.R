@@ -9,7 +9,9 @@ textDiff <- function(texts) {
   for (i in 2:length(diffs)) {
     currentDiff <- .mergeTextDiff(currentDiff, diffs[[i]])
   }
-  .packTextDiff2(currentDiff)
+  rtn <- .packTextDiff2(currentDiff)
+  attr(rtn, "v") <- rtn$firstVersion
+  rtn
 }
 
 .firstVersion <- function(diffs) {
@@ -69,7 +71,7 @@ textDiff <- function(texts) {
     versionContainsSegment <- substr(segmentTable$indexCodes, version, version) == 1
     segmentTable <- segmentTable[versionContainsSegment,]
     numSegments <- sum(versionContainsSegment)
-    data.frame(text=segmentTable$fullStringSegments, 
+    data.frame(value=segmentTable$fullStringSegments, 
                version = rep(version, times=numSegments),
                element = 1:numSegments,
                firstVersion=segmentTable$firstVersion,
