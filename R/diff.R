@@ -9,39 +9,75 @@ textDiff <- function(texts) {
   for (i in 2:length(diffs)) {
     currentDiff <- .mergeTextDiff(currentDiff, diffs[[i]])
   }
-  .packTextDiff(currentDiff)
+  .packTextDiff2(currentDiff)
 }
 
-.packTextDiff <- function(diffs) {
+.firstVersion <- function(diffs) {
+  n <- length(diffs[[1]])
+  findFirstVersion <- function(i, diffs) {
+    min(which(!is.na(sapply(diffs, FUN=function(x,i) x[i], i))))
+  }
+  sapply(1:n, FUN=findFirstVersion, diffs)
+}
+
+.diffValues <- function(diffs) {
+  n <- length(diffs[[1]])
+  findValue <- function(i, diffs) {
+    unique(na.omit(sapply(diffs, FUN=function(x,i) x[i], i)))
+  }
+  sapply(1:n, FUN=findValue, diffs)
+}
+
+.diffCodes <- function(diffs) {
   n <- length(diffs[[1]])
   calculateIndexCodes <- function(i, diffs) {
     flags <- unlist(lapply(diffs, 
                            FUN=function(x, i) ifelse(is.na(x[i]), 0, 1), i))
     paste(flags, collapse="")
   }
-  findIndexValue <- function(i, diffs) {
-    unique(na.omit(sapply(diffs, FUN=function(x,i) x[i], i)))
-  }
-  indexCodes<- sapply(1:n, FUN=calculateIndexCodes, diffs)
+  sapply(1:n, FUN=calculateIndexCodes, diffs)
+}
+
+.packTextDiff <- function(diffs) {
+  n <- length(diffs[[1]])
+  
+  indexCodes <- .diffCodes(diffs)
+  indexValues <- .diffValues(diffs)
+  firstVersion <- .firstVersion(diffs)
+  
   codeStarts <- which(indexCodes[1:(n-1)] != indexCodes[2:n]) + 1
   codeEnds <- codeStarts - 1
   codeStarts <- c(1, codeStarts)
   codeEnds <- c(codeEnds, n)
-  indexValues <- sapply(1:n, FUN=findIndexValue, diffs)
+  
   totalString <- paste(indexValues, collapse="")
+  
   substr2 <- function(x, starts, ends, string) {
     substr(string, starts[x], ends[x])
   }
   stringSegments <- sapply(1:length(codeStarts), FUN=substr2,
                            codeStarts, codeEnds, totalString)
-  segmentIndexCodes <- indexCodes[codeStarts]
-  indexValues <- lapply(segmentIndexCodes, stringToCharVector)
-  indexValues <- lapply(indexValues, FUN=`==`, "1")
-  names(indexValues) <- segmentIndexCodes
-  indexValues <- do.call(data.frame, args=c(indexValues, stringsAsFactors=FALSE))
-  names(indexValues) <- 1:length(indexValues)
-  attr(indexValues, "text") <- stringSegments
-  indexValues
+  segmentFromIndex <- function(x, starts, ends, segments) {
+    segments[x >= starts & x <= ends]
+  }
+  fullStringSegments <- sapply(1:n, segmentFromIndex,
+                               codeStarts, codeEnds, stringSegments)
+  segmentTable <- unique(data.frame(indexCodes, fullStringSegments, 
+                                    firstVersion, stringsAsFactors=FALSE))
+  
+  extractVersionData <- function(version, segmentTable) {
+    versionContainsSegment <- substr(segmentTable$indexCodes, version, version) == 1
+    segmentTable <- segmentTable[versionContainsSegment,]
+    numSegments <- sum(versionContainsSegment)
+    data.frame(text=segmentTable$fullStringSegments, 
+               version = rep(version, times=numSegments),
+               element = 1:numSegments,
+               firstVersion=segmentTable$firstVersion,
+               stringsAsFactors=FALSE)
+  }
+  
+  resultDFs <- lapply(1:length(diffs), extractVersionData, segmentTable)
+  do.call("rbind", resultDFs)
 }
 
 .mergeTextDiff <- function(x, y) {

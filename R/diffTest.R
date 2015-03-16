@@ -8,6 +8,8 @@ d1 <- .singleTextDiff(x, y)
 d2 <- .singleTextDiff(y, z)
 .mergeTextDiff(d1,d2)
 diffObj <- textDiff(c(x,y,z))
+str(diffObj)
+diffObj
 
 texts <- attr(diffObj, "text")
 paste(texts[unlist(diffObj[1,])], collapse="") == x
