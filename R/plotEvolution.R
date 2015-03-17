@@ -1,6 +1,6 @@
-## 
-## plotEvolution.R
-## 
+# 
+# plotEvolution.R
+# 
 
 
 #' Create an evolution visualization
@@ -58,26 +58,26 @@ plot.evolution <- function(
   evolV
 }
 
-## Get char vector of terms to use for grouping (exclude special terms)
+# Get char vector of terms to use for grouping (exclude special terms)
 .getGroupTerms <- function(evolObj) {
   stopifnot(inherits(evolObj, "evolution"), inherits(evolObj, "data.frame"))
   if (is.null(evolObj)) stop("Invalid NULL evolution object.")
   
-  ## TODO make this more general - support multiple columns and
-  ## exclude specials using: names(attr(attr(evolObj, "terms"), "specials"))
+  # TODO make this more general - support multiple columns and
+  # exclude specials using: names(attr(attr(evolObj, "terms"), "specials"))
   
-  ## Simple implementation: get term.labels except first term (assume v(..))
+  # Simple implementation: get term.labels except first term (assume v(..))
   groupTerms <- attr(attr(evolObj, "terms"), "term.labels")[-1]
   groupTerms
 }
 
-## Build internal DF w cols from given object
+# Build internal DF w cols from given object
 .buildRenderDf <- function(evolObj) {
   evolObj <- .setYvolumes(evolObj)
   evolObj
 }
 
-## Set DF yvol based on value col
+# Set DF yvol based on value col
 .setYvolumes <- function(edf) {
   if (is.numeric(edf[,"value"])) {
     edf[,"yvol"] <- edf[,"value"]
@@ -87,25 +87,25 @@ plot.evolution <- function(
   edf
 }
 
-## Get unique classes - class is the combination of group terms
+# Get unique classes - class is the combination of group terms
 .getUniqueClasses <- function(edf, groupTerms) {
   groupCol <- .getGroupColumns(edf, groupTerms)
   yclassUq <- unique(edf[,groupCol])
   yclassUq
 }
 
-## Map column names to column numbers in the data frame
+# Map column names to column numbers in the data frame
 .getGroupColumns <- function(edf, groupTerms) {
   if (length(groupTerms) > 1) stop("multi-term groups not yet supported")
   groupCol <- match(groupTerms, colnames(edf))
   groupCol
 }
 
-## Build color matrix
+# Build color matrix
 .buildColorMatrix <- function(classVec, colorRange) {
   stopifnot(is.character(classVec))
   if (colorRange != "topo") stop("Only 'topo' is currently supported.")
-  ## Currently four shades for aging color
+  # Currently four shades for aging color
   colvec1 <- .buildColorVec(classVec, 1.00)
   colvec2 <- .buildColorVec(classVec, 0.85)
   colvec3 <- .buildColorVec(classVec, 0.70)
@@ -114,9 +114,9 @@ plot.evolution <- function(
   colmx
 }
 
-## Build color vector
+# Build color vector
 .buildColorVec <- function(classVec, hsvValue) {
-  ## start and end values set the 'topo' hue range
+  # start and end values set the 'topo' hue range
   stopifnot(is.character(classVec), is.numeric(hsvValue))
   if (hsvValue < 0.0 || hsvValue > 1.0) 
     stop("hsvValue must be in range 0 to 1.")
@@ -127,7 +127,7 @@ plot.evolution <- function(
           v=hsvValue)
 }
 
-## Populate columns for rendering
+# Populate columns for rendering
 .populateRenderDf <- function(edf, groupTerms, startAtTop) {
   
   groupCol <- .getGroupColumns(edf, groupTerms)
@@ -161,14 +161,14 @@ plot.evolution <- function(
     }
   }
   
-  ## Add max xval rows so rightmost x interval will be visible
+  # Add max xval rows so rightmost x interval will be visible
   xvalmax <- max(edf[,"version"])
   xmaxrows <- edf[edf$version == xvalmax,]
   xmaxrows[,"version"] <- xvalmax + 1
   xmaxrows[,"yage"] <- pmin(xmaxrows[,"yage"] + 1, rep(4, dim(xmaxrows)[1]))
   edf <- rbind(edf, xmaxrows)
   
-  ## Transform y1 and y2 vals if visualizing y axis from top-down
+  # Transform y1 and y2 vals if visualizing y axis from top-down
   if (startAtTop) {
     edf[,"y1"] <- max(edf[,"y2"]) - edf[,"y1"]
     edf[,"y2"] <- max(edf[,"y2"]) - edf[,"y2"]
