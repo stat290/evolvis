@@ -2,7 +2,42 @@
 ## plotEvolution.R
 ## 
 
-#' Method dispatch for internal generic plot
+
+#' Create an evolution visualization
+#' 
+#' It is the evolution dispatch method for the internal generic \code{plot}
+#'
+#' \code{plot(evolutionObj, ...} or \code{plot.evolution(...)} produces a
+#' visualization object of type \code{ggvis}.  It can be passed on to 
+#' other operations in the \code{ggvis} package, such as 
+#' \code{ggvis::view_dynamic(...)} and  \code{ggvis::add_legend(...)}.
+#' 
+#' Use code like \code{ggvis::view_dynamic(vis, port = 3838)} to visualize
+#' interactivity in external local browser at \code{http://localhost:3838/}
+#' 
+#' @param evolObj The object of type \code{evolution}.
+#' @param startAtTop A logical scalar. Render starting at top of y axis?
+#' This may be preferred for document visualization, so that visually it
+#' grows \emph{from the top down}.
+#' @param interactive A logical scalar. Render interactive features?
+#' When TRUE, tooltips showing the class of content are shown on mouseover.
+#' When FALSE a static image will be rendered.
+#' @param age A logical scalar. When TRUE, colors are \emph{aged} over
+#' time, by getting darker as they progess along the x axis.
+#' @param colorPal A character scalar, either \code{topo}, \code{rainbow},
+#' or \code{warm} which specifies the range of hues in the HSV color model.
+#' @param xtitle A character scalar.  Title shown on the x axis.  If not
+#' supplied, a title will be created using the evolution formula terms.
+#'
+#' @return Returns a \code{ggvis} visualization object.
+#' 
+#' @examples
+#' \dontrun{
+#' evo <- evolution(texts ~ v(rev) + author, data=data, diff.fun=textDiff)
+#' vis <- plot(evo)
+#' view_dynamic(vis, port = 3838)
+#' }
+#'
 #' @export
 plot.evolution <- function(
   evolObj, startAtTop = TRUE, interactive = TRUE, age = TRUE, 

@@ -7,7 +7,7 @@ evo <- getEvolTestDf1()
 ## This is a plain old ggvis object, modify as needed
 vis <- plot(evo)
 ## Browse at http://<host>:3838
-view_dynamic(vis, port = 3838, quiet = TRUE)
+ggvis::view_dynamic(vis, port = 3838, quiet = TRUE)
 
 ## ==== Example 2
 evo <- getEvolTestDf2()
