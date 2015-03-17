@@ -2,9 +2,8 @@
 ## plotEvolution.R
 ## 
 
-## plot method for evolution objects
-## TODO restructure this to get data from the REAL evolution object...
-
+#' Method dispatch for internal generic plot
+#' @export
 plot.evolution <- function(
   evolObj, startAtTop = TRUE, interactive = TRUE, age = TRUE, 
   colorPal = c("topo", "rainbow", "warm"),
@@ -142,13 +141,13 @@ plot.evolution <- function(
   edf
 }
 
-## Render the ggvis object
+# Render the ggvis object
 .renderEvol <- function(
   edf, xtitle, interactive, age, colorMx, yclassUq, groupTerms) {
 
   groupCol <- .getGroupColumns(edf, groupTerms)
-  if ( !require("ggvis", quietly=TRUE)) 
-    stop("Rendering requires package ggvis.")
+  # ggvis required ver is in DESCRIPTION file
+  # if ( !require("ggvis", quietly=TRUE)) stop()
   vis <- ggvis::ggvis(
     data = as.data.frame(edf), 
     x = ~version, y = ~y1, y2 = ~y2,

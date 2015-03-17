@@ -8,6 +8,7 @@ Authors@R: c(person("Kyle", "Johnston", email = "kjohnsto@stanford.edu", role = 
             person("Stanley", "Johnson", email = "sjj@stanford.edu", role = c("aut", "cre")))
 Maintainer: <sjj@stanford.edu>
 Description: evolution visualization; generalized tools for visualizing change in composition over time or other axes.
+URL: https://github.com/stat290/evolvis
 Depends: R (>= 3.1.0)
 License: GPL-2
 LazyData: TRUE
