@@ -4,13 +4,14 @@
 
 ## ==== Example 1
 evo <- getEvolTestDf1()
-vis <- plot(evo) ## method dispatch
-## This is a plain old ggvis object, modify as needed...
-vis
+## This is a plain old ggvis object, modify as needed
+vis <- plot(evo)
+## Browse at http://<host>:3838
+view_dynamic(vis, port = 3838, quiet = TRUE)
 
 ## ==== Example 2
 evo <- getEvolTestDf2()
-plot(evo)
+plot(evo) ## method dispatch
 
 
 ## ==== Following are test data generation functions 
@@ -23,11 +24,11 @@ getEvolTestDf1 <- function() {
   text3 <- "This is a very, very short sentence."
   texts <- c(text1, text2, text3)
   revisionNum <- c(1,2,3)
-  authors <- c("Larry", "Curly", "Moe")
+  authorZZZ <- c("Larry", "Curly", "Moe")
   component <- rep("Body", times=3)
-  testingData <- data.frame(texts, revisionNum, authors, component,
+  testingData <- data.frame(texts, revisionNum, authorZZZ, component,
                             stringsAsFactors=FALSE)
-  testingEvol <- evolution(texts ~ v(revisionNum) + authors, 
+  testingEvol <- evolution(texts ~ v(revisionNum) + authorZZZ, 
                            data=testingData, diff.fun=textDiff)
   testingEvol
 }
@@ -41,11 +42,11 @@ getEvolTestDf2 <- function() {
   text4 <- "There was once a saint. He saved Ireland and invented green beer." 
   texts <- c(text1, text2, text3, text4)
   revisionNum <- c(1,2,3,4)
-  authors <- c("Fred", "Sue", "Jack", "Sam")
+  Irish_Historians <- c("Fred", "Sue", "Jack", "Sam")
   component <- rep("Body", times=4)
-  testingData <- data.frame(texts, revisionNum, authors, component,
+  testingData <- data.frame(texts, revisionNum, Irish_Historians, component,
                             stringsAsFactors=FALSE)
-  testingEvol <- evolution(texts ~ v(revisionNum) + authors,
+  testingEvol <- evolution(texts ~ v(revisionNum) + Irish_Historians,
                            data=testingData, diff.fun=textDiff)
   testingEvol
 }

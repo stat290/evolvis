@@ -14,19 +14,31 @@ plot.evolution <- function(
   stopifnot(is.logical(startAtTop), is.logical(interactive), is.logical(age))
   colorPal <- match.arg(colorPal)
   
+  grpTerms <- .getGroupTerms(evolObj)
   edf <- .buildRenderDf(evolObj)
-  yclassUq <- .getUniqueClasses(edf)
+  yclassUq <- .getUniqueClasses(edf, grpTerms)
   colorMx <- .buildColorMatrix(yclassUq, colorPal)
-  edf <- .populateRenderDf(edf, startAtTop)
+  edf <- .populateRenderDf(edf, grpTerms, startAtTop)
 
-  evolV <- .renderEvol(edf, colorMx, yclassUq, xtitle, interactive, age)
+  evolV <- .renderEvol(edf, xtitle, interactive, age, colorMx, yclassUq, grpTerms)
   evolV
+}
+
+## Get char vector of terms to use for grouping (exclude special terms)
+.getGroupTerms <- function(evolObj) {
+  stopifnot(inherits(evolObj, "evolution"), inherits(evolObj, "data.frame"))
+  if (is.null(evolObj)) stop("Invalid NULL evolution object.")
+  
+  ## TODO make this more general - support multiple columns and
+  ## exclude specials using: names(attr(attr(evolObj, "terms"), "specials"))
+  
+  ## Simple implementation: get term.labels except first term (assume v(..))
+  groupTerms <- attr(attr(evolObj, "terms"), "term.labels")[-1]
+  groupTerms
 }
 
 ## Build internal DF w cols from given object
 .buildRenderDf <- function(evolObj) {
-  stopifnot(inherits(evolObj, "evolution"), inherits(evolObj, "data.frame"))
-  if (is.null(evolObj)) stop("Invalid NULL evolution object.")
   evolObj <- .setYvolumes(evolObj)
   evolObj
 }
@@ -41,11 +53,18 @@ plot.evolution <- function(
   edf
 }
 
-## Get unique classes in yclass column
-.getUniqueClasses <- function(edf) {
-  # TODO replace 'authors' with the dynamic colname(s) used for class
-  yclassUq <- unique(edf[,"authors"])
+## Get unique classes - class is the combination of group terms
+.getUniqueClasses <- function(edf, groupTerms) {
+  groupCol <- .getGroupColumns(edf, groupTerms)
+  yclassUq <- unique(edf[,groupCol])
   yclassUq
+}
+
+## Map column names to column numbers in the data frame
+.getGroupColumns <- function(edf, groupTerms) {
+  if (length(groupTerms) > 1) stop("multi-term groups not yet supported")
+  groupCol <- match(groupTerms, colnames(edf))
+  groupCol
 }
 
 ## Build color matrix
@@ -75,9 +94,9 @@ plot.evolution <- function(
 }
 
 ## Populate columns for rendering
-.populateRenderDf <- function(edf, startAtTop) {
-  ## TODO determine is "version" is always the name of xval, 
-  ## may need to look at 'v' special term
+.populateRenderDf <- function(edf, groupTerms, startAtTop) {
+  
+  groupCol <- .getGroupColumns(edf, groupTerms)
   xvalmin <- min(edf[,"version"])
   currxval <- -1
   for (i in 1:length(edf[,1])) {
@@ -87,7 +106,7 @@ plot.evolution <- function(
       yvolmax <- 0
     }
     # Look for earlier matches 
-    ldf <- edf[edf$authors==edf[i,"authors"] & 
+    ldf <- edf[edf[,groupCol]==edf[i,groupCol] & 
                  edf$element==edf[i,"element"] & 
                  edf$version < currxval,]
     # If earlier match(es) found, get latest one (max xval)
@@ -124,8 +143,10 @@ plot.evolution <- function(
 }
 
 ## Render the ggvis object
-.renderEvol <- function(edf, colorMx, yclassUq, xtitle, interactive, age) {
+.renderEvol <- function(
+  edf, xtitle, interactive, age, colorMx, yclassUq, groupTerms) {
 
+  groupCol <- .getGroupColumns(edf, groupTerms)
   if ( !require("ggvis", quietly=TRUE)) 
     stop("Rendering requires package ggvis.")
   vis <- ggvis::ggvis(
@@ -142,7 +163,7 @@ plot.evolution <- function(
     }
     if (edf[i,"version"] > xvalmin) {
       # Past minimum xval, look for earlier matches
-      ldf <- edf[edf$authors == edf[i,"authors"] & 
+      ldf <- edf[edf[,groupCol]==edf[i,groupCol] & 
                    edf$element == edf[i,"element"] & 
                    edf$version < currxval,]
       # If earlier match found, get latest one (max xval)
@@ -154,7 +175,7 @@ plot.evolution <- function(
         # are the data obj for the current ggvis::mark
         ldf <- rbind(ldf, edf[i,])
         # Color indexing      
-        colrow <- base::match(edf[i,"authors"], yclassUq)
+        colrow <- base::match(edf[i,groupCol], yclassUq)
         if (age) {
           colage <- edf[i,"yage"]
         } else {
@@ -171,7 +192,8 @@ plot.evolution <- function(
   
   # X and Y labels
   if (is.null(xtitle)) {
-    vis <- ggvis::add_axis(vis, type = "x", title = "Evolution")
+    vis <- ggvis::add_axis(vis, type = "x", 
+                           title = paste(groupTerms, "evolution"))
   } else {
     vis <- ggvis::add_axis(vis, type = "x", title = xtitle)
   }
@@ -192,7 +214,7 @@ plot.evolution <- function(
     }
     # Data not found:
     if (dim(row)[1] < 1) return(NULL)
-    paste(c(row$authors, row$ycomp, row$value), collapse = "<br />")
+    paste(c(row[groupCol], row$ycomp, row$value), collapse = "<br />")
   }
   # Add tooltips if interactive requested
   if (interactive) {
