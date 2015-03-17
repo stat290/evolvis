@@ -14,38 +14,37 @@ plot.evolution <- function(
   stopifnot(is.logical(startAtTop), is.logical(interactive), is.logical(age))
   colorPal <- match.arg(colorPal)
   
-  edf <- .buildRenderDf(evo)
+  edf <- .buildRenderDf(evolObj)
   yclassUq <- .getUniqueClasses(edf)
   colorMx <- .buildColorMatrix(yclassUq, colorPal)
   edf <- .populateRenderDf(edf, startAtTop)
+
   evolV <- .renderEvol(edf, colorMx, yclassUq, xtitle, interactive, age)
   evolV
 }
 
 ## Build internal DF w cols from given object
 .buildRenderDf <- function(evolObj) {
-  stopifnot(inherits(evolObj, "evolution"))
-  df <- attr(evo,"data")
-  if (is.null(df)) stop("'data' attribute missing, expecting data frame.")
-  # Build from terms (?) and validate...
-  
-  df <- .setYvolumes(df)
-  df
+  stopifnot(inherits(evolObj, "evolution"), inherits(evolObj, "data.frame"))
+  if (is.null(evolObj)) stop("Invalid NULL evolution object.")
+  evolObj <- .setYvolumes(evolObj)
+  evolObj
 }
 
-## Set DF yvol based on ycontent col
+## Set DF yvol based on value col
 .setYvolumes <- function(edf) {
-  if (is.numeric(edf[,"ycontent"])) {
-    edf[,"yvol"] <- edf[,"ycontent"]
+  if (is.numeric(edf[,"value"])) {
+    edf[,"yvol"] <- edf[,"value"]
   } else {
-    edf[,"yvol"] <- nchar(edf[,"ycontent"])
+    edf[,"yvol"] <- nchar(edf[,"value"])
   }
   edf
 }
 
 ## Get unique classes in yclass column
 .getUniqueClasses <- function(edf) {
-  yclassUq <- unique(edf[,"yclass"])
+  # TODO replace 'authors' with the dynamic colname(s) used for class
+  yclassUq <- unique(edf[,"authors"])
   yclassUq
 }
 
@@ -66,7 +65,8 @@ plot.evolution <- function(
 .buildColorVec <- function(classVec, hsvValue) {
   ## start and end values set the 'topo' hue range
   stopifnot(is.character(classVec), is.numeric(hsvValue))
-  if (hsvValue < 0.0 || hsvValue > 1.0) stop("hsvValue must be in range 0 to 1.")
+  if (hsvValue < 0.0 || hsvValue > 1.0) 
+    stop("hsvValue must be in range 0 to 1.")
   rainbow(length(classVec), 
           alpha=0.7, 
           s=1, 
@@ -76,27 +76,31 @@ plot.evolution <- function(
 
 ## Populate columns for rendering
 .populateRenderDf <- function(edf, startAtTop) {
-  xvalmin <- min(edf[,"xval"])
+  ## TODO determine is "version" is always the name of xval, 
+  ## may need to look at 'v' special term
+  xvalmin <- min(edf[,"version"])
   currxval <- -1
   for (i in 1:length(edf[,1])) {
     # Reset when new xval found
-    if (edf[i,"xval"] != currxval) {
-      currxval <- edf[i,"xval"]
+    if (edf[i,"version"] != currxval) {
+      currxval <- edf[i,"version"]
       yvolmax <- 0
     }
-    # When past xvalmin, look for earlier matches of class+comp
-    ldf <- edf[edf$yclass==edf[i,"yclass"] & edf$ycomp==edf[i,"ycomp"] & edf$xval < currxval,]
-    # If earlier match found, get latest one (max xval)
-    if (length(ldf[,"xval"]) > 0) {
-      xvalmax <- max(ldf[,"xval"])
-      # ldf is row with previous xval of this class+comp
-      ldf <- ldf[ldf$xval == xvalmax,]
+    # Look for earlier matches 
+    ldf <- edf[edf$authors==edf[i,"authors"] & 
+                 edf$element==edf[i,"element"] & 
+                 edf$version < currxval,]
+    # If earlier match(es) found, get latest one (max xval)
+    if (length(ldf[,"version"]) > 0) {
+      xvalmax <- max(ldf[,"version"])
+      # ldf is row with previous version
+      ldf <- ldf[ldf$version == xvalmax,]
       edf[i,"y1"] <- yvolmax
       edf[i,"y2"] <- edf[i,"y1"] + edf[i,"yvol"]
       edf[i,"yage"] <- min(ldf[1,"yage"] + 1, 4)
       yvolmax <- edf[i,"y2"]
     } else {
-      # Otherwise start new class+comp
+      # Otherwise start new 
       edf[i,"y1"] <- yvolmax
       edf[i,"y2"] <- edf[i,"y1"] + edf[i,"yvol"]
       edf[i,"yage"] <- 0
@@ -105,9 +109,9 @@ plot.evolution <- function(
   }
   
   ## Add max xval rows so rightmost x interval will be visible
-  xvalmax <- max(edf[,"xval"])
-  xmaxrows <- edf[edf$xval == xvalmax,]
-  xmaxrows[,"xval"] <- xvalmax + 1
+  xvalmax <- max(edf[,"version"])
+  xmaxrows <- edf[edf$version == xvalmax,]
+  xmaxrows[,"version"] <- xvalmax + 1
   xmaxrows[,"yage"] <- pmin(xmaxrows[,"yage"] + 1, rep(4, dim(xmaxrows)[1]))
   edf <- rbind(edf, xmaxrows)
   
@@ -119,36 +123,38 @@ plot.evolution <- function(
   edf
 }
 
-## Render the object
+## Render the ggvis object
 .renderEvol <- function(edf, colorMx, yclassUq, xtitle, interactive, age) {
-  
-  if ( !require("ggvis", quietly=TRUE)) stop("Rendering requires package ggvis.")
+
+  if ( !require("ggvis", quietly=TRUE)) 
+    stop("Rendering requires package ggvis.")
   vis <- ggvis::ggvis(
-    data = edf, x = ~xval, y = ~y1, y2 = ~y2,
-    stroke := "gray", strokeWidth := 1) 
-  
-  xvalmin <- min(edf[,"xval"])
+    data = as.data.frame(edf), 
+    x = ~version, y = ~y1, y2 = ~y2,
+    stroke := "gray", strokeWidth := 1)
+  # Leftmost x value
+  xvalmin <- min(edf[,"version"])
   currxval <- -1
   for (i in 1:length(edf[,1])) {
-    # reset to zero when new xval found
-    if (edf[i,"xval"] != currxval) {
-      currxval <- edf[i,"xval"]
+    # Reset when new xval found
+    if (edf[i,"version"] != currxval) {
+      currxval <- edf[i,"version"]
     }
-    if (edf[i,"xval"] > xvalmin) {
-      # Past minimum xval, look for earlier matches of class+comp
-      ldf <- edf[edf$yclass == edf[i,"yclass"] & 
-                   edf$ycomp == edf[i,"ycomp"] & 
-                   edf$xval < currxval,]
+    if (edf[i,"version"] > xvalmin) {
+      # Past minimum xval, look for earlier matches
+      ldf <- edf[edf$authors == edf[i,"authors"] & 
+                   edf$element == edf[i,"element"] & 
+                   edf$version < currxval,]
       # If earlier match found, get latest one (max xval)
-      if (length(ldf[,"xval"]) > 0) {
-        xvalmax <- max(ldf[,"xval"])
-        # ldf is row with previous xval of this class+comp
-        ldf <- ldf[ldf$xval == xvalmax,]
+      if (length(ldf[,"version"]) > 0) {
+        xvalmax <- max(ldf[,"version"])
+        # ldf is row with previous xval
+        ldf <- ldf[ldf$version == xvalmax,]
         # Together, the previous row and current row 
-        # are the current ggvis data object
+        # are the data obj for the current ggvis::mark
         ldf <- rbind(ldf, edf[i,])
         # Color indexing      
-        colrow <- base::match(edf[i,"yclass"], yclassUq)
+        colrow <- base::match(edf[i,"authors"], yclassUq)
         if (age) {
           colage <- edf[i,"yage"]
         } else {
@@ -176,17 +182,17 @@ plot.evolution <- function(
   renderTips <- function(x) {
     if(is.null(x)) return(NULL)
     # For POSIXct GMT date xval:
-    if ("POSIXct" %in% class(edf[1,"xval"])) {
-      xvalPOSIXct <- as.POSIXct(x$xval/1000, origin="1970-01-01", tz="GMT")
-      row <- edf[xvalPOSIXct==edf[,"xval"] & x$y1==edf[,"y1"],]
+    if ("POSIXct" %in% class(edf[1,"version"])) {
+      xvalPOSIXct <- as.POSIXct(x$version/1000, origin="1970-01-01", tz="GMT")
+      row <- edf[xvalPOSIXct==edf[,"version"] & x$y1==edf[,"y1"],]
     }
     # For numeric xval:
     else {
-      row <- edf[x$xval==edf[,"xval"] & x$y1==edf[,"y1"],]
+      row <- edf[x$version==edf[,"version"] & x$y1==edf[,"y1"],]
     }
     # Data not found:
     if (dim(row)[1] < 1) return(NULL)
-    paste(c(row$yclass, row$ycomp, row$ycontent), collapse = "<br />")
+    paste(c(row$authors, row$ycomp, row$value), collapse = "<br />")
   }
   # Add tooltips if interactive requested
   if (interactive) {
