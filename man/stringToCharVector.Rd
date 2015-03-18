@@ -2,11 +2,23 @@
 % Please edit documentation in R/lcs.R
 \name{stringToCharVector}
 \alias{stringToCharVector}
-\title{}
+\title{Convert a string into a vector of characters}
 \usage{
-stringToCharVector(x)
+stringToCharVector(x, divider = "")
+}
+\arguments{
+\item{x}{a single character string, to be split}
+
+\item{divider}{a token to use to divide \code{x}}
+}
+\value{
+a character vector with the substrings of  \code{x}.
 }
 \description{
-
+Instead of using string-specific operations to address substrings, it can be
+easier to expand one string into a vector of characters for addressing and
+manipulation. Largely, this exists as a convenience function for computing
+the LCS, but it has some merit in other forms as well. The function checks
+the size and class of \code{x} before performing the splitting operation.
 }
 

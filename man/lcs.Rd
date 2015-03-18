@@ -2,11 +2,25 @@
 % Please edit documentation in R/lcs.R
 \name{lcs}
 \alias{lcs}
-\title{}
+\title{Constructor for a Longest Common Subsequence (LCS) object}
 \usage{
 lcs(text = "", x.index = integer(0), y.index = integer(0))
 }
-\description{
+\arguments{
+\item{text}{the string value of the LCS}
 
+\item{x.index}{the indexes of the first string that match the characters in
+the LCS}
+
+\item{y.index}{the indexes of the second string that match the characters in
+the LCS}
+}
+\value{
+a string with two attributes--one for \code{x.index} and one for
+\code{y.index}
+}
+\description{
+The longest common subsequence of two strings is an important step in the
+diff algorithm.
 }
 

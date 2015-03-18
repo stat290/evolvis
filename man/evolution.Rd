@@ -2,11 +2,34 @@
 % Please edit documentation in R/evolution.R
 \name{evolution}
 \alias{evolution}
-\title{}
+\title{Create an evolution object by differencing source data}
 \usage{
 evolution(formula, data, subset, diff.fun, ...)
 }
-\description{
+\arguments{
+\item{formula}{a formula object to be evaluated within the context of
+\code{data}}
 
+\item{data}{a \code{data.frame} object}
+
+\item{subset}{a logical vector indicating which subset of \code{data} should
+be analyzed}
+
+\item{diff.fun}{a function to do the differencing between elements in the
+response to the formula. This function must return an object with an
+attribute called "v" which links rows with \code{data}. See \code{v} for
+details.}
+}
+\value{
+an \code{evolution} object
+}
+\description{
+Given a \code{data.frame}, extract the data to be differenced, the version
+to which the data corresponds, and any other relevant characteristics to be
+maintained with the version.
+}
+\details{
+Formula syntax is used to make data extraction easy. \code{evolution} is
+modeled after \code{lm} from the \code{stats} package.
 }
 

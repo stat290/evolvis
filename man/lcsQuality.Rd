@@ -2,11 +2,22 @@
 % Please edit documentation in R/lcs.R
 \name{lcsQuality}
 \alias{lcsQuality}
-\title{}
+\title{Measure the quality of an LCS object}
 \usage{
 lcsQuality(x)
 }
+\arguments{
+\item{x}{an LCS object}
+}
+\value{
+a number signifying how good the LCS is (larger numbers being better)
+for relative rankings of LCS object
+}
 \description{
-
+Quality represents a relative measure of how good an LCS object is to
+another. For any two strings, it is possible that a large number of LCS
+objects can be equally valid. This function measures the quality of the
+object by the length of the continuous sequences in the indexes. Equal weight
+is given to both \code{x.index} and \code{y.index}.
 }
 

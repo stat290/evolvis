@@ -2,11 +2,26 @@
 % Please edit documentation in R/lcs.R
 \name{computeLcs}
 \alias{computeLcs}
-\title{}
+\title{Compute the Longest Common Subsequence (LCS) for two strings}
 \usage{
 computeLcs(x, y, best.only = TRUE)
 }
-\description{
+\arguments{
+\item{x}{the first string}
 
+\item{y}{the second string}
+
+\item{best.only}{a logical value indicating whether only the "best" LCS
+should be returned ("best" is determined by relative quality, see
+\code{lcsQuality})}
+}
+\value{
+one or more an LCS object(s) which represent the longest common
+subsequence to \code{x} and \code{y}
+}
+\description{
+Given two strings, calculate the longest common subsequences. The algorithm
+used is adapted from Wikipedia:
+http://en.wikipedia.org/wiki/Longest_common_subsequence_problem
 }
 
