@@ -12,5 +12,6 @@ URL: https://github.com/stat290/evolvis
 Depends: R (>= 3.1.0)
 License: GPL-2
 LazyData: TRUE
-Imports:
+Imports: 
   ggvis (>= 0.4)
+Suggests: testthat

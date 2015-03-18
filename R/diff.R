@@ -112,7 +112,7 @@ textDiff <- function(texts) {
 
 .singleTextDiff <- function(x, y) {
   stopifnot(is.character(x), length(x) == 1, is.character(y), length(y) == 1)
-  lcsObj <- evolvis:::computeLcs(x,y, best.only=TRUE)
+  lcsObj <- computeLcs(x,y, best.only=TRUE)
   .diffFromLcs(x,y,lcsObj)
 }
 

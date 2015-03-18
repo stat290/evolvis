@@ -16,11 +16,11 @@ y <- "This is a very short sentence."
 exampleLCS <- computeLcs(x, y)
 
 
-
-longIndex <- attr(sequences, "y.index")
-longIndex
-y.mod <- unlist(strsplit(y, split=""))
-1:length(y.mod)
-textDiff(x,y)
-is.integer(attr(sequences, "x.index"))
-is.numeric(attr(sequences, "x.index"))
+# Stan: temp comment out: sequences obj not found: 
+# longIndex <- attr(sequences, "y.index")
+# longIndex
+# y.mod <- unlist(strsplit(y, split=""))
+# 1:length(y.mod)
+# textDiff(x,y)
+# is.integer(attr(sequences, "x.index"))
+# is.numeric(attr(sequences, "x.index"))
