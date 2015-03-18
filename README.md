@@ -5,7 +5,11 @@ evolvis
 
 The goal of evolvis is a generalized toolset for generating lineage of some composition, such as a document, from a series of events such as revisions, and visualizing the lineage interactively.
 
-The evolvis package provides three categories of functions which work together: \* XML transform \* Text differencing \* Interactive visualization
+The evolvis package provides three categories of functions which work together:
+
+-   XML transform
+-   Text differencing
+-   Interactive visualization
 
 ### XML transform:
 
