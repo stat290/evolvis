@@ -19,6 +19,8 @@ be analyzed}
 response to the formula. This function must return an object with an
 attribute called "v" which links rows with \code{data}. See \code{v} for
 details.}
+
+\item{...}{additional parameters}
 }
 \value{
 an \code{evolution} object

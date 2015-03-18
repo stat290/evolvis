@@ -4,11 +4,13 @@
 \alias{plot.evolution}
 \title{Create an evolution visualization}
 \usage{
-\method{plot}{evolution}(evolObj, startAtTop = TRUE, interactive = TRUE,
+\method{plot}{evolution}(x, ..., startAtTop = TRUE, interactive = TRUE,
   age = TRUE, colorPal = c("topo", "rainbow", "warm"), xtitle = NULL)
 }
 \arguments{
-\item{evolObj}{The object of type \code{evolution}.}
+\item{x}{The object of type \code{evolution}.}
+
+\item{...}{Additional parameters to ggvis.}
 
 \item{startAtTop}{A logical scalar. Render starting at top of y axis?
 This may be preferred for document visualization, so that visually it

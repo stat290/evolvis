@@ -20,6 +20,7 @@
 #' response to the formula. This function must return an object with an
 #' attribute called "v" which links rows with \code{data}. See \code{v} for 
 #' details.
+#' @param ... additional parameters
 #' 
 #' @return an \code{evolution} object 
 #' 

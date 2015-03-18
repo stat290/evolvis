@@ -15,7 +15,7 @@
 #' Use code like \code{ggvis::view_dynamic(vis, port = 3838)} to visualize
 #' interactivity in external local browser at \code{http://localhost:3838/}
 #' 
-#' @param evolObj The object of type \code{evolution}.
+#' @param x The object of type \code{evolution}.
 #' @param startAtTop A logical scalar. Render starting at top of y axis?
 #' This may be preferred for document visualization, so that visually it
 #' grows \emph{from the top down}.
@@ -28,6 +28,7 @@
 #' or \code{warm} which specifies the range of hues in the HSV color model.
 #' @param xtitle A character scalar.  Title shown on the x axis.  If not
 #' supplied, a title will be created using the evolution formula terms.
+#' @param ... Additional parameters to ggvis.
 #'
 #' @return Returns a \code{ggvis} visualization object.
 #' 
@@ -40,16 +41,16 @@
 #'
 #' @export
 plot.evolution <- function(
-  evolObj, startAtTop = TRUE, interactive = TRUE, age = TRUE, 
+  x, ..., startAtTop = TRUE, interactive = TRUE, age = TRUE, 
   colorPal = c("topo", "rainbow", "warm"),
   xtitle = NULL) {
   
-  stopifnot(inherits(evolObj, "evolution"))
+  stopifnot(inherits(x, "evolution"))
   stopifnot(is.logical(startAtTop), is.logical(interactive), is.logical(age))
   colorPal <- match.arg(colorPal)
   
-  grpTerms <- .getGroupTerms(evolObj)
-  edf <- .buildRenderDf(evolObj)
+  grpTerms <- .getGroupTerms(x)
+  edf <- .buildRenderDf(x)
   yclassUq <- .getUniqueClasses(edf, grpTerms)
   colorMx <- .buildColorMatrix(yclassUq, colorPal)
   edf <- .populateRenderDf(edf, grpTerms, startAtTop)
