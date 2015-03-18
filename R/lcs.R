@@ -1,10 +1,14 @@
 ##
+#'
+#'@export
 stringToCharVector <- function(x) {
   stopifnot(is.character(x), length(x) == 1)
   unlist(strsplit(x, split=""))
 }
 
 ## Longest Common Subsequence object constructor (S3-style)
+#'
+#'@export
 lcs <- function(text="", x.index=integer(0), y.index=integer(0)) {
   rtn <- text
   attr(rtn, "x.index") <- as.integer(x.index)
@@ -14,6 +18,8 @@ lcs <- function(text="", x.index=integer(0), y.index=integer(0)) {
 }
 
 ## function to concatenate two LCS strings while preserving the indexes
+#'
+#'@export
 combineLcs <- function(lcs1, lcs2) {
   stopifnot(inherits(lcs1, "lcs"), inherits(lcs2, "lcs"))
     lcs(paste(lcs1, lcs2, sep=""),
@@ -22,6 +28,8 @@ combineLcs <- function(lcs1, lcs2) {
 }
 
 ## function to compute the LCS from two strings
+#'
+#'@export
 computeLcs <- function(x,y, best.only=TRUE) {
   stopifnot(is.character(x), length(x) == 1, 
             is.character(y), length(y) == 1)  
@@ -41,6 +49,8 @@ computeLcs <- function(x,y, best.only=TRUE) {
 }
 
 ## function to rank computed LCS objects on a relative basis
+#'
+#'@export
 lcsQuality <- function(x) {
   stopifnot(inherits(x, "lcs"))
   sum(c(.lcsIndexQuality(attr(x, "x.index")),
