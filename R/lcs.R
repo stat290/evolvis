@@ -21,7 +21,6 @@ stringToCharVector <- function(x, divider="") {
   unlist(strsplit(x, split=divider))
 }
 
-
 #' Constructor for a Longest Common Subsequence (LCS) object
 #'
 #' The longest common subsequence of two strings is an important step in the
@@ -44,7 +43,6 @@ lcs <- function(text="", x.index=integer(0), y.index=integer(0)) {
   class(rtn) <- "lcs"
   rtn
 }
-
 
 #' Concatenate two LCS objects
 #'

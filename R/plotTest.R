@@ -37,9 +37,9 @@ getEvolTestDf1 <- function() {
 
 getEvolTestDf2 <- function() {
   text1 <- "There was once a leprechaun."
-  text2 <- "There was once a saint."
-  text3 <- "There was once a saint. He invented green beer."
-  text4 <- "There was once a saint. He saved Ireland and invented green beer." 
+  text2 <- "There was once a wolf."
+  text3 <- "There was once a wolf. He invented green beer."
+  text4 <- "There was once a wolf. He saved Ireland and invented green beer." 
   texts <- c(text1, text2, text3, text4)
   revisionNum <- c(1,2,3,4)
   Irish_Historians <- c("Fred", "Sue", "Jack", "Sam")
