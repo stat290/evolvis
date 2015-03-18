@@ -5,7 +5,7 @@ evolvis
 
 The goal of evolvis is a generalized toolset for generating lineage of some composition, such as a document, from a series of events such as revisions, and visualizing the lineage interactively.
 
-The evolvis package provides three categories of functions which work together: XML transform Text differencing Interactive visualization
+The evolvis package provides three categories of functions which work together: \* XML transform \* Text differencing \* Interactive visualization
 
 ### XML transform:
 
@@ -13,7 +13,7 @@ Transforms XML documents into a series of text revisions. For the initial use ca
 
 ### Text differencing:
 
-The `evolution` function is the main entry point. It uses formula syntax to express the evolution of differences in the response variable `y` as a function of the version `v(...)` by content class, for example `texts ~ v(revisionNum) + author`. `diff.fun` is required and specifies the differencing function.
+The `evolution` function is the main entry point, and returns an object of type `evolution`. It uses formula syntax to express the evolution of differences in the response variable `y` as a function of the version `v(...)` by content class, for example `texts ~ v(revisionNum) + author`. `diff.fun` is required and specifies the differencing function.
 
 ### Interactive visualization:
 
