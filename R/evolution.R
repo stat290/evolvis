@@ -2,6 +2,8 @@
 ## modeled after LM
 ## diff.fun must return an object with an attribute called "v" which links
 ##    rows up with the original version
+#'
+#'@export
 evolution <- function(formula, data, subset, diff.fun, ...) {
   if (missing(diff.fun)) {
     stop("diff.fun must be specified")
@@ -36,6 +38,8 @@ evolution <- function(formula, data, subset, diff.fun, ...) {
 ## Simple version function
 ## works as a flag to sort the data
 ## all other terms are simply for other uses
+#'
+#'@export
 v <- function(x) {
   ## function to signal what should be used as the version
   if (!is.numeric(x)) {

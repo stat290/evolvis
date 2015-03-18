@@ -1,6 +1,8 @@
 ## Diff
 ## http://en.wikipedia.org/wiki/Diff_utility
 
+#'
+#'@export
 textDiff <- function(texts) {
   stopifnot(is.character(texts))
   x <- 1:(length(texts) - 1)
