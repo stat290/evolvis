@@ -1,6 +1,32 @@
-## Diff
-## http://en.wikipedia.org/wiki/Diff_utility
+#
+# diff.R
+#
 
+#' Compute the differences between texts
+#'
+#' Similar to the Unix diff tool, produces a series of commonalities, additions,
+#' and deletions between versions of text.
+#' 
+#' Unlike the Unix diff tool, this function has been extrapolated from operating
+#' on two text blocks to operating on any number of text blocks.
+#' 
+#' This algorithm was derived from the algorithm shown on Wikipedia:
+#' http://en.wikipedia.org/wiki/Diff_utility.
+#' 
+#' @param texts a vector of character strings in the order in which the
+#' differences should be calculated
+#' 
+#' @return a \code{data.frame} with the differences between the \code{texts}.
+#' The resulting \code{data.frame} has four columns: \code{value}, 
+#' \code{version}, \code{element}, and \code{firstVersion}. \code{value} is a
+#' vector of text elements in the largest possible chunks. \code{version} is the
+#' version in which the text element appears. \code{element} is an id unique to
+#' the text element (unique across versions). \code{firstVersion} is the first
+#' version in which the element appears. The inputs can be reconstructed from
+#' the result by concatenating values within a version in the order of the
+#' element id.
+#' 
+#' @export
 textDiff <- function(texts) {
   stopifnot(is.character(texts))
   x <- 1:(length(texts) - 1)
