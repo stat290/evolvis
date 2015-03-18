@@ -21,7 +21,7 @@ The `evolution` function is the main entry point, and returns an object of type 
 
 ### Interactive visualization:
 
-The plot.evolution function is an S3 dispatch method for the internal generic plot function. It requires the `ggvis` package and produces a `ggvis` object which can be rendered using the generic `print` method or `ggvis::view_dynamic` or `ggvis::view_static`.
+The `plot.evolution` function is an S3 dispatch method for the internal generic plot function. It requires the `ggvis` package and produces a `ggvis` object which can be rendered using the generic `print` method or `ggvis::view_dynamic` or `ggvis::view_static`.
 
 ### Background:
 
