@@ -64,7 +64,9 @@ combineLcs <- function(lcs1, lcs2) {
 
 #' Compute the Longest Common Subsequence (LCS) for two strings
 #'
-#' Given two LCS objects, calculate the longest common subsequences
+#' Given two strings, calculate the longest common subsequences. The algorithm
+#' used is adapted from Wikipedia:
+#' http://en.wikipedia.org/wiki/Longest_common_subsequence_problem
 #' 
 #' @param x the first string
 #' @param y the second string
