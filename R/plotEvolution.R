@@ -2,6 +2,8 @@
 # plotEvolution.R
 # 
 
+# Add ggvis properties as global variables to satisfy R CMD check
+utils::globalVariables(c('stroke', 'strokeWidth', 'fill', 'opacity'))
 
 #' Create an evolution visualization
 #' 
@@ -141,8 +143,8 @@ plot.evolution <- function(
       yvolmax <- 0
     }
     # Look for earlier matches 
-    ldf <- edf[edf[,groupCol]==edf[i,groupCol] & 
-                 edf$element==edf[i,"element"] & 
+    ldf <- edf[edf[,groupCol] == edf[i,groupCol] & 
+                 edf$element == edf[i,"element"] & 
                  edf$version < currxval,]
     # If earlier match(es) found, get latest one (max xval)
     if (length(ldf[,"version"]) > 0) {
@@ -182,12 +184,17 @@ plot.evolution <- function(
   edf, xtitle, interactive, age, colorMx, yclassUq, groupTerms) {
 
   groupCol <- .getGroupColumns(edf, groupTerms)
-  # ggvis required ver is in DESCRIPTION file
-  # if ( !require("ggvis", quietly=TRUE)) stop()
+  strokeColor <- "gray"
+  strokeWidth <- 1
+  ribbonOpacity <- 0.7
+  # NB ggvis min required version is given in DESCRIPTION file
   vis <- ggvis::ggvis(
     data = as.data.frame(edf), 
-    x = ~version, y = ~y1, y2 = ~y2,
-    stroke := "gray", strokeWidth := 1)
+    x = ~version, 
+    y = ~y1, 
+    y2 = ~y2,
+    stroke = strokeColor, 
+    strokeWidth = strokeWidth)
   # Leftmost x value
   xvalmin <- min(edf[,"version"])
   currxval <- -1
@@ -198,7 +205,7 @@ plot.evolution <- function(
     }
     if (edf[i,"version"] > xvalmin) {
       # Past minimum xval, look for earlier matches
-      ldf <- edf[edf[,groupCol]==edf[i,groupCol] & 
+      ldf <- edf[edf[,groupCol] == edf[i,groupCol] & 
                    edf$element == edf[i,"element"] & 
                    edf$version < currxval,]
       # If earlier match found, get latest one (max xval)
@@ -216,10 +223,11 @@ plot.evolution <- function(
         } else {
           colage <- 1
         }
+        fillColor <- substr(colorMx[colrow, colage],1,7)
         vis <- ggvis::layer_ribbons(
           vis, 
-          fill := substr(colorMx[colrow, colage],1,7), 
-          opacity := .7, 
+          fill = fillColor, 
+          opacity = ribbonOpacity, 
           data = ldf)
       }
     }
@@ -240,12 +248,12 @@ plot.evolution <- function(
     if(is.null(x)) return(NULL)
     # For POSIXct GMT date xval:
     if ("POSIXct" %in% class(edf[1,"version"])) {
-      xvalPOSIXct <- as.POSIXct(x$version/1000, origin="1970-01-01", tz="GMT")
-      row <- edf[xvalPOSIXct==edf[,"version"] & x$y1==edf[,"y1"],]
+      xvalPOSIXct <- as.POSIXct(x$version/1000, origin = "1970-01-01", tz="GMT")
+      row <- edf[xvalPOSIXct == edf[,"version"] & x$y1 == edf[,"y1"],]
     }
     # For numeric xval:
     else {
-      row <- edf[x$version==edf[,"version"] & x$y1==edf[,"y1"],]
+      row <- edf[x$version == edf[,"version"] & x$y1 == edf[,"y1"],]
     }
     # Data not found:
     if (dim(row)[1] < 1) return(NULL)
