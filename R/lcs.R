@@ -1,14 +1,41 @@
-##
+#
+# lcs.R
+#
+
+#' Convert a string into a vector of characters
 #'
-#'@export
-stringToCharVector <- function(x) {
+#' Instead of using string-specific operations to address substrings, it can be
+#' easier to expand one string into a vector of characters for addressing and
+#' manipulation. Largely, this exists as a convenience function for computing
+#' the LCS, but it has some merit in other forms as well. The function checks
+#' the size and class of \code{x} before performing the splitting operation.
+#' 
+#' @param x a single character string, to be split
+#' @param divider a token to use to divide \code{x}
+#' 
+#' @return a character vector with the substrings of  \code{x}.
+#' 
+#' @export
+stringToCharVector <- function(x, divider="") {
   stopifnot(is.character(x), length(x) == 1)
-  unlist(strsplit(x, split=""))
+  unlist(strsplit(x, split=divider))
 }
 
-## Longest Common Subsequence object constructor (S3-style)
+#' Constructor for a Longest Common Subsequence (LCS) object
 #'
-#'@export
+#' The longest common subsequence of two strings is an important step in the
+#' diff algorithm.
+#' 
+#' @param text the string value of the LCS
+#' @param x.index the indexes of the first string that match the characters in
+#' the LCS
+#' @param y.index the indexes of the second string that match the characters in
+#' the LCS
+#' 
+#' @return a string with two attributes--one for \code{x.index} and one for
+#' \code{y.index}
+#' 
+#' @export
 lcs <- function(text="", x.index=integer(0), y.index=integer(0)) {
   rtn <- text
   attr(rtn, "x.index") <- as.integer(x.index)
@@ -17,9 +44,17 @@ lcs <- function(text="", x.index=integer(0), y.index=integer(0)) {
   rtn
 }
 
-## function to concatenate two LCS strings while preserving the indexes
+#' Concatenate two LCS objects
 #'
-#'@export
+#' Given two LCS objects, concatenate them in the order given.
+#' 
+#' @param lcs1 the first LCS
+#' @param lcs2 the second LCS
+#' 
+#' @return an LCS object in which the strings, \code{x.index}, and 
+#' \code{y.index} have each been concatenated with the corresponding pair.
+#' 
+#' @export
 combineLcs <- function(lcs1, lcs2) {
   stopifnot(inherits(lcs1, "lcs"), inherits(lcs2, "lcs"))
     lcs(paste(lcs1, lcs2, sep=""),
@@ -27,9 +62,22 @@ combineLcs <- function(lcs1, lcs2) {
         c(attr(lcs1, "y.index"), attr(lcs2, "y.index")))
 }
 
-## function to compute the LCS from two strings
+#' Compute the Longest Common Subsequence (LCS) for two strings
 #'
-#'@export
+#' Given two strings, calculate the longest common subsequences. The algorithm
+#' used is adapted from Wikipedia:
+#' http://en.wikipedia.org/wiki/Longest_common_subsequence_problem
+#' 
+#' @param x the first string
+#' @param y the second string
+#' @param best.only a logical value indicating whether only the "best" LCS
+#' should be returned ("best" is determined by relative quality, see 
+#' \code{lcsQuality})
+#' 
+#' @return one or more an LCS object(s) which represent the longest common
+#' subsequence to \code{x} and \code{y}
+#' 
+#' @export
 computeLcs <- function(x,y, best.only=TRUE) {
   stopifnot(is.character(x), length(x) == 1, 
             is.character(y), length(y) == 1)  
@@ -48,9 +96,20 @@ computeLcs <- function(x,y, best.only=TRUE) {
   sequences
 }
 
-## function to rank computed LCS objects on a relative basis
+#' Measure the quality of an LCS object
 #'
-#'@export
+#' Quality represents a relative measure of how good an LCS object is to
+#' another. For any two strings, it is possible that a large number of LCS 
+#' objects can be equally valid. This function measures the quality of the 
+#' object by the length of the continuous sequences in the indexes. Equal weight
+#' is given to both \code{x.index} and \code{y.index}.
+#' 
+#' @param x an LCS object
+#' 
+#' @return a number signifying how good the LCS is (larger numbers being better)
+#' for relative rankings of LCS object
+#' 
+#' @export
 lcsQuality <- function(x) {
   stopifnot(inherits(x, "lcs"))
   sum(c(.lcsIndexQuality(attr(x, "x.index")),
