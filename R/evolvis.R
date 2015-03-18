@@ -15,10 +15,17 @@
 #' Interactive visualization
 #' 
 #' @section XML transform:
-#' These functions ...
+#' Transforms XML documents into a series of text revisions.  For the 
+#' initial use case these are WikiMedia documents, which is the XML
+#' schema for Wikipedia pages.  When connected to the internet, 
+#' XML documents can be downloaded on demand.
 #'
 #' @section Text differencing:
-#' These functions ...
+#' The \code{evolution} function is the main entry point.  It uses 
+#' formula syntax to express the evolution of differences in the 
+#' response variable \code{y} as a function of the version \code{v(...)}
+#' by content class, for example \code{texts ~ v(revisionNum) + author}.
+#' \code{diff.fun} is required and specifies the differencing function.
 #' 
 #' @section Interactive visualization:
 #' The plot.evolution function is an S3 dispatch method for the
