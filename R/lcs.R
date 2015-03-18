@@ -1,3 +1,7 @@
+##
+## Begin kjohnsto code
+##
+
 #
 # lcs.R
 #
@@ -171,3 +175,6 @@ lcsQuality <- function(x) {
   }
   listArray[[numRows]][[numCols]]
 }
+##
+## End kjohnsto code
+##

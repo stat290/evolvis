@@ -1,3 +1,7 @@
+##
+## Begin sjj code
+##
+
 #
 # evolvis.R 
 # A NULL code file for generating roxygen2 package documentation
@@ -43,3 +47,6 @@
 #' @name evolvis
 NULL
 #
+##
+## End sjj code
+##

@@ -1,3 +1,7 @@
+##
+## Begin kjohnsto code
+##
+
 #
 # evolution.R
 #
@@ -77,3 +81,7 @@ v <- function(x) {
   }
   x
 }
+##
+## End kjohnsto code
+##
+

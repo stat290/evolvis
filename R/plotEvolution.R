@@ -1,3 +1,7 @@
+##
+## Begin sjj code
+##
+
 # 
 # plotEvolution.R
 # 
@@ -265,3 +269,7 @@ plot.evolution <- function(
   }
   vis
 }
+##
+## End sjj code
+##
+

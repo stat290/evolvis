@@ -1,3 +1,7 @@
+##
+## Begin kjohnsto code
+##
+
 #
 # diff.R
 #
@@ -202,3 +206,7 @@ textDiff <- function(texts) {
   }
   list(rtnX, rtnY)
 }
+##
+## End kjohnsto code
+##
+
