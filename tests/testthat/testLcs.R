@@ -1,3 +1,7 @@
+##
+## Begin sjj code
+##
+
 library(evolvis)
 library(testthat)
 
@@ -20,6 +24,10 @@ test_that("LCS object is as expected", {
   expect_equal(attr(lcsAB, "x.index"), 1)
   expect_equal(attr(lcsAB, "y.index"), 4)
 })
+
+##
+## End sjj code
+##
 
 # TODO More tests to formalize: 
 

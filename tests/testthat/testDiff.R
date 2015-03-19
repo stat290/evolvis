@@ -1,3 +1,7 @@
+##
+## Begin sjj code
+##
+
 library(evolvis)
 library(testthat)
 
@@ -30,6 +34,10 @@ test_that("Text difference and merge as expected", {
   expect_equal(length(d3), 3)
   expect_equal(sum(is.na(d3[[1]])), 17)
 })
+
+##
+## End sjj code
+##
 
 # TEST MORE tests to formalize: 
 
