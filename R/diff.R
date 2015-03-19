@@ -31,6 +31,10 @@
 #' element id.
 #' 
 #' @export
+#' @examples
+#' strings <- c("This is a test.", "This is another test.", 
+#'              "This is a third test.")
+#' textDiff(strings)
 textDiff <- function(texts) {
   stopifnot(is.character(texts))
   x <- 1:(length(texts) - 1)

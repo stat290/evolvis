@@ -32,4 +32,9 @@ on two text blocks to operating on any number of text blocks.
 This algorithm was derived from the algorithm shown on Wikipedia:
 http://en.wikipedia.org/wiki/Diff_utility.
 }
+\examples{
+strings <- c("This is a test.", "This is another test.",
+             "This is a third test.")
+textDiff(strings)
+}
 

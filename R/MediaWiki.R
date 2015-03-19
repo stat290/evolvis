@@ -2,29 +2,47 @@
 # MediaWiki.R
 #
 
+#' Wikipedia revision data for the Boston_Red_Sox page
+#'
+#' An example XML output of Special:Export for the Boston_Red_Sox page.
+#' 
+#' @format a character vector of length 1
+#' @source was the result of a call to MediaWikiSpecialExport:
+#' MediaWikiSpecialExport("Boston_Red_Sox", offset="2015-01-01T04:39:58Z", limit=3)
+"bosox"
+
+#' Wikipedia revision data for the Small page
+#'
+#' An example XML output of Special:Export for the Small page.
+#' 
+#' @format a character vector of length 1
+#' @source was the result of a call to MediaWikiSpecialExport:
+#' MediaWikiSpecialExport("small", offset="2015-01-01T00:00:00Z", limit=3)
+"small"
+
+
 #' Wrapper function for Wikipedia Special:Export
 #' 
 #' For repeated use of the Special:Export functionality in the WikiMedia API
 #' specifically for Wikipedia, it made sense to have a convenience function.
 #' 
 #' @param pages a character vector of pages to retrieve
-#' @param dir the direction in which the revisions should be sorted
 #' @param offset the version with which to start
 #' @param limit the number of versions to return
 #' 
 #' @return the XML content returned
 #' 
-#' @example
+#' @examples
 #' \dontrun{
 #' bosox <- MediaWikiSpecialExport("Boston_Red_Sox", offset="2015-01-01T04:39:58Z", limit=3)
-#' nchar(bosox)
 #' small <- MediaWikiSpecialExport("small", offset="2015-01-01T00:00:00Z", limit=3)
-#' nchar(small)
 #' }
+#' nchar(bosox)
+#' nchar(small)
+#' 
 #' 
 #' @export
-MediaWikiSpecialExport <- function(pages, dir=c("asc", "desc"), offset=1, 
-                                   limit=5) {
+MediaWikiSpecialExport <- function(pages, offset=1, limit=5) {
   stopifnot(is.character(pages))
   linefeed <- "%0A"
   endpoint <- "http://en.wikipedia.org/w/index.php"
@@ -33,7 +51,7 @@ MediaWikiSpecialExport <- function(pages, dir=c("asc", "desc"), offset=1,
   body <- list(title=title, pages=pages, offset=offset, limit=limit, 
                action="submit")
   r <- httr::POST(endpoint, body=body, encode="form")
-  content(r, "text")
+  httr::content(r, "text")
 }
 
 #' Data extraction class
@@ -44,10 +62,12 @@ MediaWikiSpecialExport <- function(pages, dir=c("asc", "desc"), offset=1,
 #' This class was adapted from my answers to an earlier assignment in the 
 #' course.
 #' 
-#' @example
+#' @return a parser object
+#' 
+#' @examples
 #' \dontrun{
 #' parser <- MediaWikiSpecialExportParser()
-#' handler <- xmlEventParse(file=small, branches=parser$saxHandler(), asText=TRUE)
+#' handler <- XML::xmlEventParse(file=small, branches=parser$saxHandler(), asText=TRUE)
 #' revisions <- parser$details()
 #' str(revisions)
 #' revisions
@@ -65,30 +85,30 @@ MediaWikiSpecialExportParser <- function() {
   }
   saxHandler <- function() {
     page <- function(context, node, attrs, ...) {
-      title <- xmlValue(xmlElementsByTagName(node, name="title")[[1]])
-      pageId <- xmlValue(xmlElementsByTagName(node, name="id")[[1]])
-      revisionNodes <- xmlElementsByTagName(node, name="revision")
+      title <- XML::xmlValue(XML::xmlElementsByTagName(node, name="title")[[1]])
+      pageId <- XML::xmlValue(XML::xmlElementsByTagName(node, name="id")[[1]])
+      revisionNodes <- XML::xmlElementsByTagName(node, name="revision")
       for (revNode in revisionNodes) {
-        timestamp <- xmlValue(xmlElementsByTagName(revNode, name="timestamp")[[1]])
-        contributorNodes <- xmlElementsByTagName(revNode,name="contributor")
+        timestamp <- XML::xmlValue(XML::xmlElementsByTagName(revNode, name="timestamp")[[1]])
+        contributorNodes <- XML::xmlElementsByTagName(revNode,name="contributor")
         username <- NA
         userId <- NA
         if (length(contributorNodes) > 0) {
-          usernameNodes <- xmlElementsByTagName(
+          usernameNodes <- XML::xmlElementsByTagName(
             contributorNodes[[1]], name="username")
           if (length(usernameNodes) > 0) {
-            username <- xmlValue(usernameNodes[[1]])
+            username <- XML::xmlValue(usernameNodes[[1]])
           }
-          userIdNodes <- xmlElementsByTagName(
+          userIdNodes <- XML::xmlElementsByTagName(
             contributorNodes[[1]], name="id")
           if (length(userIdNodes) > 0) {
-            userId <- xmlValue(userIdNodes[[1]])
+            userId <- XML::xmlValue(userIdNodes[[1]])
           }
         }
-        textNodes <- xmlElementsByTagName(revNode, name="text")
+        textNodes <- XML::xmlElementsByTagName(revNode, name="text")
         for (textNode in textNodes) {
-          if (!is.null(xmlGetAttr(textNode, "bytes"))) {
-            text <- xmlValue(textNode)
+          if (!is.null(XML::xmlGetAttr(textNode, "bytes"))) {
+            text <- XML::xmlValue(textNode)
           }
         }
         dfRow <- list(title=title,
@@ -100,7 +120,7 @@ MediaWikiSpecialExportParser <- function() {
         addRevision(dfRow)
       }
     }
-    c(page=xmlParserContextFunction(page))
+    c(page=XML::xmlParserContextFunction(page))
   }
   list(details=function() details, saxHandler=saxHandler)
 }
