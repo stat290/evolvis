@@ -1,3 +1,6 @@
+##
+## Begin sjj code
+##
 library(evolvis)
 library(testthat)
 
@@ -25,6 +28,9 @@ test_that("Evolution and visualization objects are as expected", {
   expect_equal("plot.evolution" %in% methods(plot), TRUE)
   expect_equal(length(vis), 14)
 })
+##
+## End sjj code
+##
 
 # TODO More test scenarios to formalize:
 
