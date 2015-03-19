@@ -47,68 +47,61 @@ MediaWikiSpecialExport <- function(pages, dir=c("asc", "desc"), offset=1,
 #' 
 #' @example
 #' \dontrun{
-#' parser <- MediaWikiSpecialExportParser$new()
+#' parser <- MediaWikiSpecialExportParser()
 #' handler <- xmlEventParse(file=small, branches=parser$saxHandler(), asText=TRUE)
-#' revisions <- parser$getDetails()
+#' revisions <- parser$details()
 #' str(revisions)
+#' revisions
 #' }
 #' 
 #' @export
-MediaWikiSpecialExportParser <- R6Class("MediaWikiSpecialExportParser",
-  public=list(
-    initialize = function() {
-    },
-    saxHandler = function() {
-       page <- function(context, node, attrs, ...) {
-         title <- xmlValue(xmlElementsByTagName(node, name="title")[[1]])
-         pageId <- xmlValue(xmlElementsByTagName(node, name="id")[[1]])
-         revisionNodes <- xmlElementsByTagName(node, name="revision")
-         for (revNode in revisionNodes) {
-           timestamp <- xmlValue(xmlElementsByTagName(revNode, name="timestamp")[[1]])
-           contributorNodes <- xmlElementsByTagName(revNode,name="contributor")
-           username <- NA
-           userId <- NA
-           if (length(contributorNodes) > 0) {
-             usernameNodes <- xmlElementsByTagName(
-               contributorNodes[[1]], name="username")
-             if (length(usernameNodes) > 0) {
-               username <- xmlValue(usernameNodes[[1]])
-             }
-             userIdNodes <- xmlElementsByTagName(
-               contributorNodes[[1]], name="id")
-             if (length(userIdNodes) > 0) {
-               userId <- xmlValue(userIdNodes[[1]])
-             }
-           }
-           textNodes <- xmlElementsByTagName(revNode, name="text")
-           for (textNode in textNodes) {
-             if (!is.null(xmlGetAttr(textNode, "bytes"))) {
-               text <- xmlValue(textNode)
-             }
-           }
-           dfRow <- list(title=title,
-                         pageId=pageId,
-                         timestamp=timestamp, 
-                         contributorId=userId, 
-                         contributorName=username,
-                         text=text)
-           private$addRevision(dfRow)
-         }
-       }
-       c(page=xmlParserContextFunction(page))
-     },
-     getDetails = function() {
-       private$details
-     }
-   ),
-   private=list(
-     details = NULL,
-     addRevision = function(dfRow) {
-       if (is.null(private$details)) {
-         private$details <- data.frame(dfRow, stringsAsFactors=FALSE)
-       } else {
-         private$details <- rbind(private$details, dfRow)
-       }
-     }
-   )
-)
+MediaWikiSpecialExportParser <- function() {
+  details <- NULL
+  addRevision <- function(dfRow) {
+    if (is.null(details)) {
+      details <<- data.frame(dfRow, stringsAsFactors=FALSE)
+    } else {
+      details <<- rbind(details, dfRow)
+    }
+  }
+  saxHandler <- function() {
+    page <- function(context, node, attrs, ...) {
+      title <- xmlValue(xmlElementsByTagName(node, name="title")[[1]])
+      pageId <- xmlValue(xmlElementsByTagName(node, name="id")[[1]])
+      revisionNodes <- xmlElementsByTagName(node, name="revision")
+      for (revNode in revisionNodes) {
+        timestamp <- xmlValue(xmlElementsByTagName(revNode, name="timestamp")[[1]])
+        contributorNodes <- xmlElementsByTagName(revNode,name="contributor")
+        username <- NA
+        userId <- NA
+        if (length(contributorNodes) > 0) {
+          usernameNodes <- xmlElementsByTagName(
+            contributorNodes[[1]], name="username")
+          if (length(usernameNodes) > 0) {
+            username <- xmlValue(usernameNodes[[1]])
+          }
+          userIdNodes <- xmlElementsByTagName(
+            contributorNodes[[1]], name="id")
+          if (length(userIdNodes) > 0) {
+            userId <- xmlValue(userIdNodes[[1]])
+          }
+        }
+        textNodes <- xmlElementsByTagName(revNode, name="text")
+        for (textNode in textNodes) {
+          if (!is.null(xmlGetAttr(textNode, "bytes"))) {
+            text <- xmlValue(textNode)
+          }
+        }
+        dfRow <- list(title=title,
+                      pageId=pageId,
+                      timestamp=timestamp, 
+                      contributorId=userId, 
+                      contributorName=username,
+                      text=text)
+        addRevision(dfRow)
+      }
+    }
+    c(page=xmlParserContextFunction(page))
+  }
+  list(details=function() details, saxHandler=saxHandler)
+}
