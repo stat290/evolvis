@@ -1,5 +1,5 @@
 #
-# MediaWiki.R
+# begin kjohnsto code
 #
 
 #' Wikipedia revision data for the Boston_Red_Sox page
@@ -17,7 +17,7 @@
 #' 
 #' @format a character vector of length 1
 #' @source was the result of a call to MediaWikiSpecialExport:
-#' MediaWikiSpecialExport("small", offset="2015-01-01T00:00:00Z", limit=3)
+#' MediaWikiSpecialExport("small", offset="2015-01-01T00:00:00Z", limit=6)
 "small"
 
 
@@ -35,7 +35,7 @@
 #' @examples
 #' \dontrun{
 #' bosox <- MediaWikiSpecialExport("Boston_Red_Sox", offset="2015-01-01T04:39:58Z", limit=3)
-#' small <- MediaWikiSpecialExport("small", offset="2015-01-01T00:00:00Z", limit=3)
+#' small <- MediaWikiSpecialExport("small", offset="2015-01-01T00:00:00Z", limit=6)
 #' }
 #' nchar(bosox)
 #' nchar(small)
@@ -124,3 +124,6 @@ MediaWikiSpecialExportParser <- function() {
   }
   list(details=function() details, saxHandler=saxHandler)
 }
+#
+# end kjohnsto code
+#

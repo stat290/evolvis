@@ -1,0 +1,65 @@
+---
+title: "xmlVignette"
+author: "Stanley J Johnson, Kyle S Johnston"
+date: "03/18/2015"
+output: html_document
+---
+
+## Wikipedia Visualization
+
+### Overview
+The goal of this project was to build a set of tools to visualize the changes
+in a Wikipedia page. This 
+
+### Extracting Revisions from XML
+`small` is a string that contains three revisions to the Wikipedia page
+"Small". While `MediaWikiSpecialExport` can be used to retrieve revision 
+histories dynamically from Wikipedia, this vignette will work with data already
+downloaded and stored with the package.
+
+```
+parser <- MediaWikiSpecialExportParser()
+handler <- XML::xmlEventParse(file=small, branches=parser$saxHandler(), asText=TRUE)
+revisions <- parser$details()
+```
+
+If we take a quick look at `revisions`, we can see that we get six
+different revisions, as we originally expected.
+```
+str(revisions)
+head(revisions)
+```
+
+### Computing the Evolution of the Text
+
+For ease of execution, we'll append a revision number to the `data.frame`. This
+version number will serve as the way to link the `textDiff` results to the
+rest of the version data in `revisions`.
+
+Note that running the evolution function may take a bit of time as `textDiff`
+works on a character-by-character basis to calculate differences. We
+discussed the possibility of implementing something that works on a 
+word-by-word or a line-by-line basis, but that remains for a future
+implementation.
+```
+revisions$version <- 1:nrow(revisions)
+smallEvolution <- evolution(text ~ v(version) + contributorName, 
+                            data=revisions, diff.fun=textDiff)
+head(smallEvolution)
+```
+
+`smallEvolution` contains the source text in unit elements, the version, and 
+key information about that text element (like the contributorName). 
+
+### Plotting the Results
+
+With very little effort we can plot this object to see a visual representation.
+
+```
+smallVisual <- plot(smallEvolution)
+smallVisual
+```
+
+While the example here is somewhat trivial--and relatively uninteresting--on 
+it's own, it serves as a good example of how this package can be adapted and 
+improved to visualize revisions to text in general.

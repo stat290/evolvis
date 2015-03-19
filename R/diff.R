@@ -30,18 +30,23 @@
 #' the result by concatenating values within a version in the order of the
 #' element id.
 #' 
-#' @export
 #' @examples
 #' strings <- c("This is a test.", "This is another test.", 
 #'              "This is a third test.")
 #' textDiff(strings)
+#' 
+#' 
+#' 
+#' @export
 textDiff <- function(texts) {
   stopifnot(is.character(texts))
   x <- 1:(length(texts) - 1)
   diffs <- lapply(x, FUN=function(x) .singleTextDiff(texts[[x]], texts[[x+1]]))
   currentDiff <- diffs[[1]]
-  for (i in 2:length(diffs)) {
-    currentDiff <- .mergeTextDiff(currentDiff, diffs[[i]])
+  if (length(diffs) > 1) {
+    for (i in 2:length(diffs)) {
+      currentDiff <- .mergeTextDiff(currentDiff, diffs[[i]])
+    }
   }
   rtn <- .packTextDiff(currentDiff)
   attr(rtn, "v") <- rtn$firstVersion

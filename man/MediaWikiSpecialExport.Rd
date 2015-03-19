@@ -23,7 +23,7 @@ specifically for Wikipedia, it made sense to have a convenience function.
 \examples{
 \dontrun{
 bosox <- MediaWikiSpecialExport("Boston_Red_Sox", offset="2015-01-01T04:39:58Z", limit=3)
-small <- MediaWikiSpecialExport("small", offset="2015-01-01T00:00:00Z", limit=3)
+small <- MediaWikiSpecialExport("small", offset="2015-01-01T00:00:00Z", limit=6)
 }
 nchar(bosox)
 nchar(small)
