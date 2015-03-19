@@ -39,8 +39,7 @@ MediaWikiSpecialExport <- function(pages, dir=c("asc", "desc"), offset=1,
 #' Data extraction class
 #' 
 #' Given the standard format of the Special:Export API function, this object
-#' can parse the results and produce a \code{data.frame}. This class is INCOMPLETE, 
-#' and does not return the right text yet.
+#' can parse the results and produce a \code{data.frame}.
 #' 
 #' This class was adapted from my answers to an earlier assignment in the 
 #' course.
