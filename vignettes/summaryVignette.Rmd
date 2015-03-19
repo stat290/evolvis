@@ -127,7 +127,7 @@ With that in mind, these are some immediate areas for future work:
 **A minimal example demonstrating differencing and visualization**
 
 Create toy data: 
-```{r}
+```
 library(evolvis)
 
 text1 <- "This is a short sentence."
@@ -142,19 +142,19 @@ testData <- data.frame(texts, revisionNum, ThreeAuthors, component,
 ```
 
 Create the `evolution` object 
-```{r}
+```
 testEvo <- evolution(texts ~ v(revisionNum) + ThreeAuthors, 
                          data=testData, diff.fun=textDiff)
 ```
 
 Create and view the visualization `ggvis` object all at once 
-```{r}
+```
 vis <- plot(testEvo)
 vis
 ```
 
 Explicit call, plus more options for the plot method
-```{r}
+```
 vis <- evolvis:::plot.evolution(testEvo, 
                                 startAtTop = FALSE, 
                                 age = FALSE, 
@@ -163,7 +163,8 @@ vis
 ```
 
 Specify the port then use an external browser at `http://localhost:3838`
-```{r}
-# ggvis::view_dynamic(vis, port = 3838)
 ```
+ggvis::view_dynamic(vis, port = 3838)
+```
+
 

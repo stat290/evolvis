@@ -197,8 +197,11 @@ plot.evolution <- function(
     x = ~version, 
     y = ~y1, 
     y2 = ~y2,
-    stroke = strokeColor, 
-    strokeWidth = strokeWidth)
+    stroke = strokeColor) ##, 
+    ## strokeWidth = strokeWidth) ## strokeWidth)
+  
+  ## ggvis::scale_numeric(vis, "strokeWidth", range = c(1, 10))
+
   # Leftmost x value
   xvalmin <- min(edf[,"version"])
   currxval <- -1
@@ -231,7 +234,8 @@ plot.evolution <- function(
         vis <- ggvis::layer_ribbons(
           vis, 
           fill = fillColor, 
-          opacity = ribbonOpacity, 
+          opacity := 0.7,
+          #opacity = ribbonOpacity,
           data = ldf)
       }
     }
