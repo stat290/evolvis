@@ -18,12 +18,13 @@ histories dynamically from Wikipedia, this vignette will work with data already
 downloaded and stored with the package.
 
 ```
+library(evolvis)
 parser <- MediaWikiSpecialExportParser()
 handler <- XML::xmlEventParse(file=small, branches=parser$saxHandler(), asText=TRUE)
 revisions <- parser$details()
 ```
 
-If we take a quick look at `revisions`, we can see that we get six
+If we take a quick look at `revisions`, we can see that we get three
 different revisions, as we originally expected.
 ```
 str(revisions)

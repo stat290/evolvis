@@ -7,7 +7,7 @@
 \format{a character vector of length 1}
 \source{
 was the result of a call to MediaWikiSpecialExport:
-MediaWikiSpecialExport("small", offset="2015-01-01T00:00:00Z", limit=6)
+MediaWikiSpecialExport("small", offset="2015-01-01T00:00:00Z", limit=3)
 }
 \usage{
 small
