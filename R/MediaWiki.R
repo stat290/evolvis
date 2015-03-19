@@ -18,6 +18,8 @@
 #' \dontrun{
 #' bosox <- MediaWikiSpecialExport("Boston_Red_Sox", offset="2015-01-01T04:39:58Z", limit=3)
 #' nchar(bosox)
+#' small <- MediaWikiSpecialExport("small", offset="2015-01-01T00:00:00Z", limit=3)
+#' nchar(small)
 #' }
 #' 
 #' @export
@@ -34,8 +36,6 @@ MediaWikiSpecialExport <- function(pages, dir=c("asc", "desc"), offset=1,
   content(r, "text")
 }
 
-xmlTreeParse(bosox, asText=TRUE)
-
 #' Data extraction class
 #' 
 #' Given the standard format of the Special:Export API function, this object
@@ -48,7 +48,7 @@ xmlTreeParse(bosox, asText=TRUE)
 #' @example
 #' \dontrun{
 #' parser <- MediaWikiSpecialExportParser$new()
-#' handler <- xmlEventParse(file=bosox, branches=parser$saxHandler(), asText=TRUE)
+#' handler <- xmlEventParse(file=small, branches=parser$saxHandler(), asText=TRUE)
 #' revisions <- parser$getDetails()
 #' str(revisions)
 #' }
@@ -80,7 +80,12 @@ MediaWikiSpecialExportParser <- R6Class("MediaWikiSpecialExportParser",
                userId <- xmlValue(userIdNodes[[1]])
              }
            }
-           text <- xmlValue(xmlElementsByTagName(revNode, name="text")[[1]])
+           textNodes <- xmlElementsByTagName(revNode, name="text")
+           for (textNode in textNodes) {
+             if (!is.null(xmlGetAttr(textNode, "bytes"))) {
+               text <- xmlValue(textNode)
+             }
+           }
            dfRow <- list(title=title,
                          pageId=pageId,
                          timestamp=timestamp, 
